@@ -7,6 +7,10 @@ const HomeScreen = () => {
 
   const navigation: any = useNavigation();
   
+    // TODO: HOMEWORK
+    // 2. Show all of the images that are in your memories (try and do it with real time data)
+    
+
   return (
     <ScrollView style={styles.container}>
         <Pressable onPress={() => navigation.navigate("Add")}>
