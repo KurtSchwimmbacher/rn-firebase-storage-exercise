@@ -2,6 +2,8 @@ import { Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } fr
 import React, { useState } from 'react'
 import * as ImagePicker from "expo-image-picker"
 import { uploadImageToBucket } from '../services/BucketService'
+import { db } from '../firebase'
+import { addDoc, collection } from 'firebase/firestore'
 
 const AddScreen = () => {
 
@@ -30,10 +32,26 @@ const AddScreen = () => {
         console.log("No image selected")
         return;
     }
-    const imageUrl = await uploadImageToBucket(image, `memory-${title}-${Date.now()}.jpg`)
-    console.log("Image to uploaded to bucket", imageUrl);
-    // TODO: HOMEWORK
-    // 1. save this imageURL in firestore with the title of the memory
+    try {
+        // upload image to bucket and get the URL
+        const imageUrl = await uploadImageToBucket(image, `memory-${title}-${Date.now()}.jpg`)
+        console.log("Image to uploaded to bucket", imageUrl);
+        
+        // save to firestore
+        const memoryRef = collection(db, 'memories');
+        await addDoc(memoryRef, {
+            title: title,
+            imageUrl: imageUrl,
+            createdAt: new Date(),
+        });
+        
+        console.log("memory saved to firestore");
+        // reset the form
+        setTitle('');
+        setImage(null);
+    } catch (error) {
+        console.error("error saving memory to firestore", error)
+    }
     
 }
 
